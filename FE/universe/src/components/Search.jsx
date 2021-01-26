@@ -1,46 +1,45 @@
-import React from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
-import {Header} from './Header'
-import {SearchResult} from './SearchResult'
 
-const SearchBar = (props) => {
-    return(
-      <div>
-        <input onChange={props.search} placeholder="Search..."/>
-      </div>
-    )
-}
+import TimezoneList from './Timezone/TimezoneList'
 
-class Search extends React.Component {
-  state = {
-      data: [],
-      appName: 'Search Bar',
-      list: []
+const SearchBar = props => (
+  <div className="search-input">
+    <input onChange={props.search} placeholder="Please search by typing timezone/country name" />
+  </div>
+);
+
+function Search(props) {
+  const [searchTerm, setSeachTerm] = useState("");
+  const [timeZones, setTimeZones] = useState([]);
+
+  const getSearchedTimezones = async (search) => {
+    if (!search) return;
+    try {
+      let queryData = await axios.post('/api/timezone', { search });
+      setTimeZones(queryData.data.search);
+    } catch (e) {
+      console.error(e);
+      setTimeZones([])
     }
+  };
 
-  searchData = (e)=> {
-    const params = {
-      search : e.target.value
+  const searchData = e => {
+    const term = e.target.value;
+    setSeachTerm(term);
+    if (term) {
+      getSearchedTimezones(term.trim());
+    } else {
+      setTimeZones([])
     }
+  };
 
-    const fetch = async () => {
-        let queryData = [];
-        queryData = await axios.post('/api/timezone',params);
-        this.setState({list: queryData.data.search});
-      }
-
-    fetch();
-  }
-
-  render() {
-    return(
-      <div>
-        <Header name={this.state.appName} />
-        <SearchBar search={this.searchData} />
-        {(this.state.list) ? <SearchResult data={this.state.list} /> : null  }
-      </div>
-    )
-  }
+  return (
+    <div className="search">
+      <SearchBar search={searchData} />
+      {timeZones && <TimezoneList searchTerm={searchTerm} data={timeZones} />}
+    </div>
+  );
 }
 
 export default Search;

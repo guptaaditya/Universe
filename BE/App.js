@@ -1,10 +1,11 @@
-const express=require("express");
+const express=require('express');
 const app=express();
-const PORT = 4000;
+const PORT =  process.env.PORT || 4000;
 
+app.use(express.json());
 
+app.use('/api/timezone', require('./routes/timeZones'));
 
-app.listen(PORT,function(){
-    console.log("server is listening at 4000")
+app.listen(PORT,() => {
+    console.log(`Server is listening at ${PORT}`)
 })
-

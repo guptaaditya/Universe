@@ -4,6 +4,6 @@ const {getTimeZone} = require('../controllers/timeZoneController');
 
 router
     .route('/')
-    .get(getTimeZone)
+    .post(getTimeZone)
 
 module.exports = router;

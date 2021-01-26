@@ -3,22 +3,21 @@ const parser = require('fast-xml-parser');
 
 const getTimeZone = async (req, res) => {
 
-    try {
-            async function readXml(){
-                let data = await fs.promises.readFile('timezone.xml');
-                var jsonObj = parser.parse(data.toString())
-                res.status(200).json({
-                Status:jsonObj
-            });
-            };
+    try{
+        let data = await fs.promises.readFile('timezone.xml');
+        var jsonObj = parser.parse(data.toString())
+        let search=jsonObj.TimeZones.TimeZone.filter((timezone)=>{
+            return timezone.Name.includes(req.body.Name);
+        });
 
-            readXml();
-            
+        res.status(200).json({
+            search
+        });
     }
-    catch{
-            res.status(200).json({
-                Status:"Error"
-            });
+    catch(error){
+        res.status(400).json({
+            error
+        });
     }
 
 }
